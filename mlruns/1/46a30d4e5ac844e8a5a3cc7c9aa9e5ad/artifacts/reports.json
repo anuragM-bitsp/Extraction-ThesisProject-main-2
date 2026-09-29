@@ -1,0 +1,28 @@
+[
+  {
+    "paper_id": "P001",
+    "extractor": "RULE",
+    "entity": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "relation": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "field": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 0
+    },
+    "scalar_field_statuses": {
+      "solvent": "both_absent",
+      "synthesis_method": "both_absent",
+      "temperature": "correct",
+      "reaction_time": "spurious",
+      "material.name": "both_absent"
+    }
+  }
+]

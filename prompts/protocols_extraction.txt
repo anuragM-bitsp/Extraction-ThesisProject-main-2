@@ -1,0 +1,28 @@
+This paper may describe several separate experimental procedures (for example seed synthesis, growth, overgrowth, purification). Extract EACH procedure separately and return ONE JSON object with exactly this structure:
+
+{
+  "protocols": [
+    {
+      "name": "short name of the procedure (e.g. 'Au seed synthesis')",
+      "product": "what this procedure produces, or null",
+      "reagents": [
+        {
+          "name": "chemical name exactly as written",
+          "amount": {"value": number, "unit": "string"} or null,
+          "concentration": {"value": number, "unit": "string"} or null
+        }
+      ],
+      "solvent": "string or null",
+      "temperature": {"value": number, "unit": "string"} or null,
+      "reaction_time": {"value": number, "unit": "string"} or null,
+      "pH": number or null,
+      "steps": ["one procedural action per item, in order"]
+    }
+  ]
+}
+
+Rules:
+1. Use ONLY information explicitly stated in the paper; use null or [] when something is not stated.
+2. Keep each value attached to the procedure it belongs to. Do not mix values between procedures.
+3. Numeric values must be JSON numbers. Preferred units: C, K, s, min, h, M, mM, uM, nM, wt%, mL, uL, L, mg, g, ug, nm.
+4. Return ONLY the JSON object. No Markdown, no code fences, no explanation.

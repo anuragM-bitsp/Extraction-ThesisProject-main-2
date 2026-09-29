@@ -1,0 +1,40 @@
+Extract the synthesis information for the main material reported in this paper and return it as ONE JSON object with exactly this structure:
+
+{
+  "material": {
+    "name": "string or null (e.g. 'gold nanorods')",
+    "composition": "string or null (e.g. 'Au', 'Au/Pd')",
+    "size": {"value": number, "unit": "string"} or null,
+    "morphology": "string or null (e.g. 'bipyramid', 'spherical')"
+  },
+  "precursors": [
+    {
+      "name": "chemical name exactly as written in the paper (e.g. 'HAuCl4', 'silver nitrate')",
+      "amount": {"value": number, "unit": "string"} or null,
+      "concentration": {"value": number, "unit": "string"} or null
+    }
+  ],
+  "solvent": "string or null",
+  "temperature": {"value": number, "unit": "string"} or null,
+  "reaction_time": {"value": number, "unit": "string"} or null,
+  "pH": number or null,
+  "synthesis_method": "short description of the overall method, or null (e.g. 'seed-mediated growth')",
+  "steps": [
+    {"order": 1, "description": "one procedural action, in the order performed"}
+  ],
+  "characterization": [
+    {"technique": "e.g. TEM, UV-vis, XRD", "finding": "what it showed, or null"}
+  ],
+  "properties": [
+    {"name": "e.g. particle size, LSPR band", "value": {"value": number, "unit": "string"} or null, "qualitative_value": "string or null"}
+  ]
+}
+
+Rules:
+1. Use ONLY information explicitly stated in the paper. Never guess or use outside knowledge. If something is not stated, use null (or [] for lists).
+2. Focus on the experimental/synthesis section. "temperature" and "reaction_time" are the main synthesis conditions of the final product.
+3. "amount" is a mass, volume or number of moles actually added (e.g. 50 mg, 0.2 mL). "concentration" is a concentration (e.g. 25 mM, 0.1 M, 1 wt%). A precursor can have both.
+4. Every quantity must have a numeric "value" (a JSON number, not a string) and a "unit". Use these unit spellings where they apply: C, K, s, min, h, M, mM, uM, nM, mg/mL, wt%, mL, uL, L, mg, g, ug, nm.
+5. List every chemical reagent that is added during the synthesis (metal salts, reducing agents, surfactants, shape-directing agents, acids, seeds) under "precursors". Do not list the solvent there.
+6. Keep "steps" short (one action each) and in the order they are performed.
+7. Return ONLY the JSON object. No Markdown, no code fences, no explanation.

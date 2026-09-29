@@ -1,0 +1,56 @@
+pydantic>=2.0
+pytest>=7.0
+sqlalchemy>=2.0
+psycopg2-binary>=2.9   # Postgres driver for production; sqlite is stdlib, used for local dev/tests
+boto3>=1.34            # only needed if using S3ObjectStore instead of LocalObjectStore
+pymupdf>=1.24          # PDF text/bbox extraction (ingestion/pymupdf_parser.py)
+requests>=2.31         # GROBID HTTP client (ingestion/grobid_client.py)
+pillow>=10.0            # test fixtures only (synthetic scanned-PDF image)
+
+# System (non-pip) dependencies for Step 3:
+#   apt-get install ocrmypdf tesseract-ocr    (conditional OCR — ingestion/ocr.py)
+#   GROBID running separately, e.g. via Docker (grobid/grobid image) on :8070
+#     -- ingestion/grobid_client.py talks to it over HTTP; ingestion works
+#        without it, just without title/authors/abstract/section-tagging.
+# NOTE: if pip-installed `pikepdf` is present, it can shadow the apt-provided
+# one and break ocrmypdf (ImportError: cannot import name 'PdfMatrix').
+# `pip uninstall pikepdf` to fall back to the apt version if this happens.
+
+# Step 4 (chunking + retrieval): no new pip deps for the tested path
+# (HashingEmbedder + CosineRetriever are stdlib-only). For real semantic
+# embeddings in production:
+#   sentence-transformers>=2.7   # loads BGE/E5 models (needs HF Hub access)
+# For real ANN retrieval at scale in production:
+#   pgvector>=0.2                # gives SQLAlchemy the Vector() column type
+
+# Step 7 (Prompt + LLM extractor — replaced the earlier RAG + LLM extractor):
+anthropic>=1.0    # AnthropicLLMClient (extractors/llm/llm_client.py). Needs an
+                  # Anthropic API key (sidebar in the UI, or ANTHROPIC_API_KEY).
+                  # No embedding model / sentence-transformers is needed any more.
+
+# Step 9 (normalization + entity linking): no new pip deps — reuses
+# Step 4's EmbeddingModel for the embedding-similarity fallback. For real
+# external-ontology linking in production:
+#   requests>=2.31   # already listed above; PubChemLinker uses it directly
+
+# Step 10 (annotation system + gold dataset): no new pip deps — reuses
+# Step 2's storage layer (new AnnotationORM/GoldAnnotationORM tables) and
+# stdlib only for agreement/adjudication logic.
+
+# Step 11 (evaluation framework): no new pip deps — stdlib `math` for
+# unit conversion, pydantic for PRF1/report models.
+
+# Step 12 (experiment runner + MLflow tracking):
+mlflow>=2.14   # local sqlite-backed tracking — no server/network required
+
+# Step 13 (API + orchestration):
+fastapi>=0.110
+uvicorn[standard]>=0.29   # ASGI server to actually run the API (`uvicorn orchestration.api:app`)
+python-multipart>=0.0.9   # required by FastAPI for File()/Form() upload parsing
+celery>=5.3
+redis>=5.0                 # Celery's production broker/backend; NOT required to run the
+                             # test suite (CELERY_TASK_ALWAYS_EAGER=true runs tasks in-process —
+                             # see orchestration/celery_app.py)
+
+# Streamlit UI (thin frontend over PipelineService / get_extractor)
+streamlit>=1.46
